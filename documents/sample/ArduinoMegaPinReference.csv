@@ -1,0 +1,55 @@
+pin_number,label,function,pwm_capable,notes
+0,D0,Digital I/O,no,Serial0 RX
+1,D1,Digital I/O,no,Serial0 TX
+2,D2,Digital I/O,yes,
+3,D3,Digital I/O,yes,
+4,D4,Digital I/O,yes,
+5,D5,Digital I/O,yes,
+6,D6,Digital I/O,yes,
+7,D7,Digital I/O,yes,
+8,D8,Digital I/O,yes,
+9,D9,Digital I/O,yes,
+10,D10,Digital I/O,yes,
+11,D11,Digital I/O,yes,
+12,D12,Digital I/O,yes,
+13,D13,Digital I/O,yes,Built-in LED
+14,D14,Digital I/O,no,Serial3 TX
+15,D15,Digital I/O,no,Serial3 RX
+16,D16,Digital I/O,no,Serial2 TX
+17,D17,Digital I/O,no,Serial2 RX
+18,D18,Digital I/O,no,Serial1 TX
+19,D19,Digital I/O,no,Serial1 RX
+20,D20,Digital I/O,no,I2C SDA
+21,D21,Digital I/O,no,I2C SCL
+22,D22,Digital I/O,no,
+23,D23,Digital I/O,no,
+24,D24,Digital I/O,no,
+25,D25,Digital I/O,no,
+26,D26,Digital I/O,no,
+27,D27,Digital I/O,no,
+28,D28,Digital I/O,no,
+29,D29,Digital I/O,no,
+30,D30,Digital I/O,no,
+31,D31,Digital I/O,no,
+32,D32,Digital I/O,no,
+33,D33,Digital I/O,no,
+34,D34,Digital I/O,no,
+35,D35,Digital I/O,no,
+36,D36,Digital I/O,no,
+37,D37,Digital I/O,no,
+38,D38,Digital I/O,no,
+39,D39,Digital I/O,no,
+40,D40,Digital I/O,no,
+41,D41,Digital I/O,no,
+42,D42,Digital I/O,no,
+43,D43,Digital I/O,no,
+44,D44,Digital I/O,yes,
+45,D45,Digital I/O,yes,
+46,D46,Digital I/O,yes,
+47,D47,Digital I/O,no,
+48,D48,Digital I/O,no,
+49,D49,Digital I/O,no,
+50,D50,Digital I/O,no,SPI MISO
+51,D51,Digital I/O,no,SPI MOSI
+52,D52,Digital I/O,no,SPI SCK
+53,D53,Digital I/O,no,SPI SS
