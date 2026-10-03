@@ -18,7 +18,7 @@ As an engineer, I want to upload technical datasheets and ask questions about th
 - TXT file support (add later)
 
 ## Sample documents
-- `ArduinoMega2560Rev3Datasheet.pdf`
+- `A000067-datasheet.pdf`
 - `ArduinoMegaPinReference.csv`
 
 ## Test questions
