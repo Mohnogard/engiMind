@@ -1,13 +1,32 @@
 from anthropic import AsyncAnthropic
 from app.config import settings
+from app.extractor import PDFSourceExtractor
+from pathlib import Path
+
 
 client = AsyncAnthropic(api_key=settings.anthropic_api_key)
 
 
-CONTEXT = """Arduino® Mega 2560 Rev3 is an exemplary development board dedicated for building extensive applications as
-compared to other maker boards by Arduino. The board accommodates the ATmega2560 microcontroller, which
-operates at a frequency of 16 MHz. The board contains 54 digital input/output pins, 16 analog inputs, 4 UARTs
-(hardware serial ports), a USB connection, a power jack, an ICSP header, and a reset button."""
+PROJECT_ROOT = Path(__file__).resolve().parents[2]   # llm.py → app → backend → engiMind
+PDF_PATH = PROJECT_ROOT / "documents" / "sample" / "A000067-datasheet.pdf"
+
+# --- Usage Example ---
+extractor = PDFSourceExtractor("../documents/sample/A000067-datasheet.pdf")
+
+print(f"Total Pages: {extractor.get_num_pages()}")
+# Read page text
+pages = extractor.extract_text_by_page()
+
+context = ""
+for p in pages:  # Print first 2 pages
+    context += p["text"]
+
+parts = []
+for p in pages:
+    parts.append(f"[Page {p['page']}]\n{p['text']}")
+
+CONTEXT = context
+CONTEXT = "\n\n".join(parts)
 
 SYSTEM_PROMPT = """
 You are the information extraction system.

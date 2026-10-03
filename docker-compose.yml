@@ -1,0 +1,16 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: engimind-db
+    environment:
+      POSTGRES_USER: engimind
+      POSTGRES_PASSWORD: engimind_dev
+      POSTGRES_DB: engimind
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
