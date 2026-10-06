@@ -20,3 +20,13 @@
 **Context:** Pydantic silently ignores unknown fields by default.
 **Decision:** Request models use `extra="forbid"`.
 **Why:** A misspelled optional field would otherwise be silently ignored, producing confusing behaviour with no error.
+
+## 2026-10-06 — PostgreSQL + pgvector in Docker
+**Context:** Chunks need to be stored with their text, metadata (document, page/row) and embeddings, and searched by similarity.
+**Decision:** Use PostgreSQL 17 with the pgvector extension (`pgvector/pgvector:pg17` image), run via Docker Compose with a named volume (`pgdata`).
+**Why:** One database holds both normal data and vectors — no separate vector database to run. Docker makes it reproducible; the volume keeps data across container restarts.
+**Consequences:** Dev credentials are written in docker-compose.yml for now — acceptable only for local development; move to environment variables in step 8.
+
+## 2026-10-06 — requirements.txt lives in backend/
+**Decision:** The dependency list is `backend/requirements.txt`; run `pip freeze` from `backend/`.
+**Why:** The API's Dockerfile will live in backend/, next to its dependency list.
