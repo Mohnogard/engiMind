@@ -24,7 +24,5 @@ class PDFSourceExtractor:
             )
 
         return extracted_data
-
-
-
-
+    
+ 
