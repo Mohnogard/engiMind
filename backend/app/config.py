@@ -5,5 +5,6 @@ class Settings(BaseSettings):
 
     anthropic_api_key: str
     anthropic_model: str
+    database_url: str
 
 settings = Settings()               # created once, when the module is imported

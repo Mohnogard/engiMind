@@ -1,4 +1,10 @@
+import os
+import tempfile
+from pathlib import Path
+from fastapi import UploadFile, File, HTTPException
 from fastapi import FastAPI
+
+from app.ingest import ingest_file
 from app.schemas import AskRequest, AskResponse, QuestionResult
 from app.llm import ask_llm
 
@@ -22,19 +28,29 @@ async def ask(req: AskRequest) -> AskResponse:
         ))
     return AskResponse(results=results)
 
-# async def Ask(req: AskRequest):
-#     response = await client.messages.create(
-#     model=settings.anthropic_model,
-#     max_tokens=500,
-#     temperature=0,
-#     system=SYSTEM_PROMPT,
-#     messages=[
-#         {"role": "user", "content": f"Context:\n{CONTEXT}\n\nQuestion: {question}"}
-#     ],
-#     )
-#     text = response.content[0].text
-#     results = []
-#     for question in req.questions:
-#         results.append(QuestionResult(question=question, answer= "", answerable=False, citations=[]))
-#     return AskResponse(results=results)
+
+@app.post("/upload")
+async def upload(file: UploadFile = File(...)):
+    # 1. work out the file type from its ending (lowercase, so ".PDF" also works)
+    name = Path(file.filename).name
+    suffix = Path(name).suffix.lower()
+
+    # 2. refuse anything that isn't a PDF or CSV
+    if suffix not in (".pdf", ".csv"):
+        raise HTTPException(status_code=400, detail="Only .pdf and .csv files are supported")
+
+    # 3. save the upload to a temporary file on disk
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(await file.read())
+        temp_path = tmp.name
+    # the "with" block has ended here, so the file is closed and safe to use
+
+    # 4. process it, and always delete the temp file afterwards
+    try:
+        n = await ingest_file(temp_path, name)
+    finally:
+        os.remove(temp_path)
+
+    # 5. tell the caller what happened
+    return {"document": name, "chunks": n}
 

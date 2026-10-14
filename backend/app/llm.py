@@ -1,7 +1,9 @@
 from anthropic import AsyncAnthropic
+from pathlib import Path
+
 from app.config import settings
 from app.extractor import PDFSourceExtractor
-from pathlib import Path
+
 
 
 client = AsyncAnthropic(api_key=settings.anthropic_api_key)
@@ -14,6 +16,7 @@ PDF_PATH = PROJECT_ROOT / "documents" / "sample" / "A000067-datasheet.pdf"
 extractor = PDFSourceExtractor("../documents/sample/A000067-datasheet.pdf")
 
 print(f"Total Pages: {extractor.get_num_pages()}")
+
 # Read page text
 pages = extractor.extract_text_by_page()
 

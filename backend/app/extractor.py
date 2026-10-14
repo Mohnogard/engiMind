@@ -18,11 +18,10 @@ class PDFSourceExtractor:
             page_text = page.extract_text()
             extracted_data.append(
                 {
-                    "page": index + 1,  # 1-indexed for human citations
+                    "page": index + 1,  # 1-indexed for citations
                     "text": page_text.strip() if page_text else "",
                 }
             )
 
         return extracted_data
     
- 
