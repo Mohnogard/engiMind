@@ -67,3 +67,12 @@ and any text over the limit is ignored.
 **Decision:** Check the file ending, case-insensitive. Anything else gets a 400 error.
 **Why:** Simple and fine for a demo.
 **Trade-off:** A filename can lie. A stricter check would confirm that a PDF starts with `%PDF-`.
+
+## 2026-10-18 Chunk size stays at 200 tokens
+**Decision:** Kept MAX_TOKENS = 200 after testing 100.
+**Why:** At 100 tokens, Q2 (output voltage) still missed and other questions that had hit started to miss.
+**Trade-off:** Q2 stays a known miss for pure vector search: the +3V3/+5V rows sit inside a pin-table chunk whose overall meaning is "analog pins". Planned fix: hybrid search (vector + keyword).
+
+## 2026-10-18 Test expectation corrections
+**Decision:** Fixed expected pages of results
+**Why:** The results' expected pages were incorrect, leading to a constant misses

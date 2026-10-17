@@ -1,7 +1,7 @@
 from app.extractor import PDFSourceExtractor
 from pathlib import Path
 import csv
-
+import re
 
 MAX_TOKENS = 200   # safely below the model's 256 limit
 
@@ -16,8 +16,14 @@ def split_lines(text: str, count_tokens, max_tokens: int = MAX_TOKENS) -> list[s
     """Group whole lines into pieces of at most max_tokens tokens."""
     pieces = []
     current = ""
+    footer_pattern = re.compile(r"\d+\s*/\s*\d+")
+    title = "Arduino® Mega 2560 Rev3"
     for line in text.splitlines():
         if not line.strip():
+            continue
+        if footer_pattern.search(line):
+            continue
+        if title in line:
             continue
         candidate = current + "\n" + line if current else line
         if current and count_tokens(candidate) > max_tokens:
@@ -35,21 +41,34 @@ Goes through each page; "content" represents a page with all its dictionary keys
 It passes the page's text into split lines, which returns a list of strings, which are the lines that have been split
 """
 def chunk_pdf_pages(pages: list[dict], document: str, count_tokens, max_tokens: int = MAX_TOKENS) -> list[dict]:
+    def mostly_chinese(text, threshold=0.2):
+        chinese = sum(1 for ch in text if "\u4e00" <= ch <= "\u9fff")
+        return chinese / max(len(text), 1) > threshold
+
     chunks = []
     for content in pages:
+        if mostly_chinese(content["text"], threshold=0.05):
+            continue
         for piece in split_lines(content["text"], count_tokens, max_tokens):
             chunks.append({
                 "document": document,
                 "page": content["page"],
                 "row": None,
-                "text": piece,
+                "text": piece
             })
     return chunks
 
 
 
-
-def chunk_csv_rows(csv_path, document:str) -> list[dict]:
+"""
+Opens the csv
+does through each row (index = row number), for the content, it goes through the row content, "key" is the title of the column, and "value"
+is the value of the item in that row from that column, in this case, the column names are the pin numbers, labels, functions, etc, it inserts 
+the keys and their values into the list "row_pairs", then joins them into a string with ";" as the seperator indicator, and appends that string
+into the result. It then appends everything into finalResult, in addition to an extra entry called "finalTable", which is a chunk of the entire 
+csv table
+"""
+def chunk_csv_rows(csv_path, document:str, description: str = "") -> list[dict]:
     with open(str(csv_path), mode='r', encoding="utf-8-sig", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         result = {}
@@ -67,8 +86,7 @@ def chunk_csv_rows(csv_path, document:str) -> list[dict]:
             table.append(formatted_row)
             finalResult.append(result)
             result = {}
-
-        finalTable["text"]="\n".join(table)
+        finalTable["text"] = (description + "\n" if description else "") + "\n".join(table)
         finalResult.append(finalTable)
     return(finalResult)
 
