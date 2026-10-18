@@ -76,3 +76,7 @@ and any text over the limit is ignored.
 ## 2026-10-18 Test expectation corrections
 **Decision:** Fixed expected pages of results
 **Why:** The results' expected pages were incorrect, leading to a constant misses
+
+## 2026-10-19 Fixed format of results and made it clear 
+**Decision:** Sources are numbered, and Claude cites by number. 
+**Why:** our code maps numbers back to document/page/row, so Claude can’t invent a citation.

@@ -60,6 +60,9 @@ def is_hit(result: dict, expected: tuple) -> bool:
         return result["row"] is None          # must be the whole-table chunk
     return result["page"] in pages
 
+TEST = [
+    ("What is the output voltage of the Arduino Mega 2560?", ("A000067-datasheet.pdf", {11}))
+]
 
 if __name__ == "__main__":
     import asyncio
@@ -74,10 +77,9 @@ if __name__ == "__main__":
         """
         hits = 0
         scored = 0
-        for question, expected in TESTS:
+        for question, expected in TEST:
             print("\nQ:", question)
             results = await search(question)
-
             if expected is None:
                 print("   (nothing should match: top 5 shown for reference)")
             else:
