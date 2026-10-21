@@ -57,7 +57,13 @@ async def answer(question: str, k: int = 8) -> dict:
         ],
     )
     text = response.content[0].text.strip()
-    return {"answer": text, "results": results}
+    if is_abstention(text):
+        return {"answer": "Not enough information in the provided documents.",
+                "found": False, "citations": []}
+    return {"answer": text, "found": True, "citations": extract_citations(text, results)}
+
+
+
 
 
 async def main():
@@ -67,18 +73,58 @@ async def main():
         out = await answer(question)
         print("\nQ:", question)
         print("A:", out["answer"])
+        for c in out["citations"]:
+            place = f"page {c['page']}" if c["page"] is not None else (f"row {c['row']}" if c["row"] is not None else "whole table")
+            print(f"   - {c['document']}, {place}")
         print("   expected from:", expected)
     await engine.dispose()
 
+# async def main():
+#     from app.database import engine
+
+#     for question, expected in TESTS:
+#         out = await answer(question)
+#         print("\nQ:", question)
+#         print("A:", out["answer"])
+#         print("   expected from:", expected)
+#         print("citations: ", extract_citations(out["answer"],))
+#     await engine.dispose()
+
+
+
+import re
 
 
 def is_abstention(text: str) -> bool:
-    ...   # True if the reply starts with NOT_ENOUGH_INFORMATION
+    """True if Claude's reply starts with the magic phrase, even if it keeps talking afterwards."""
+    return text.strip().startswith("NOT_ENOUGH_INFORMATION")
+
 
 def extract_citations(text: str, results: list[dict]) -> list[dict]:
-    ...
+    """
+    Turn the [1], [3] markers in Claude's answer into real citations.
+    Sticker number n belongs to results[n - 1].
+    """
+    numbers = re.findall(r"\[(\d+)\]", text)      # e.g. ['3', '3', '4']  (strings!)
 
+    citations = []
+    seen = set()                                  # numbers we have already used
+    for n in numbers:
+        number = int(n)                           # '3' -> 3
+        if number < 1 or number > len(results):   # Claude cited a sticker that doesn't exist
+            continue
+        if number in seen:                        # already added this one
+            continue
+        seen.add(number)
 
+        r = results[number - 1]                   # sticker 1 is index 0
+        citations.append({"document": r["document"], "page": r["page"], "row": r["row"]})
+    return citations
+
+"""
+Format of TESTS: [((str: question), (str: document, {dict}))] so list of tuples
+go through the answers, add the page number of the answers
+"""
 
 if __name__ == "__main__":
 
